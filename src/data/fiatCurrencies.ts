@@ -1,0 +1,111 @@
+/**
+ * Fiat catalog aligned with what international students typically see on
+ * Wise Platform, Currencycloud, Griffin / Modulr GBP–EUR corridors, and Thunes corridors.
+ * Not exhaustive of every ISO 4217 currency — extend from treasury feed when live.
+ */
+export const FIAT_CATALOG = [
+  { code: 'GBP', name: 'British pound' },
+  { code: 'USD', name: 'US dollar' },
+  { code: 'EUR', name: 'Euro' },
+  { code: 'AUD', name: 'Australian dollar' },
+  { code: 'NZD', name: 'New Zealand dollar' },
+  { code: 'CAD', name: 'Canadian dollar' },
+  { code: 'CHF', name: 'Swiss franc' },
+  { code: 'JPY', name: 'Japanese yen' },
+  { code: 'CNY', name: 'Chinese yuan' },
+  { code: 'HKD', name: 'Hong Kong dollar' },
+  { code: 'SGD', name: 'Singapore dollar' },
+  { code: 'SEK', name: 'Swedish krona' },
+  { code: 'NOK', name: 'Norwegian krone' },
+  { code: 'DKK', name: 'Danish krone' },
+  { code: 'PLN', name: 'Polish złoty' },
+  { code: 'CZK', name: 'Czech koruna' },
+  { code: 'HUF', name: 'Hungarian forint' },
+  { code: 'RON', name: 'Romanian leu' },
+  { code: 'BGN', name: 'Bulgarian lev' },
+  { code: 'ISK', name: 'Icelandic króna' },
+  { code: 'TRY', name: 'Turkish lira' },
+  { code: 'ILS', name: 'Israeli shekel' },
+  { code: 'AED', name: 'UAE dirham' },
+  { code: 'SAR', name: 'Saudi riyal' },
+  { code: 'QAR', name: 'Qatari riyal' },
+  { code: 'KWD', name: 'Kuwaiti dinar' },
+  { code: 'BHD', name: 'Bahraini dinar' },
+  { code: 'OMR', name: 'Omani rial' },
+  { code: 'JOD', name: 'Jordanian dinar' },
+  { code: 'INR', name: 'Indian rupee' },
+  { code: 'PKR', name: 'Pakistani rupee' },
+  { code: 'BDT', name: 'Bangladeshi taka' },
+  { code: 'LKR', name: 'Sri Lankan rupee' },
+  { code: 'NPR', name: 'Nepalese rupee' },
+  { code: 'MYR', name: 'Malaysian ringgit' },
+  { code: 'THB', name: 'Thai baht' },
+  { code: 'IDR', name: 'Indonesian rupiah' },
+  { code: 'PHP', name: 'Philippine peso' },
+  { code: 'VND', name: 'Vietnamese dong' },
+  { code: 'KHR', name: 'Cambodian riel' },
+  { code: 'MMK', name: 'Myanmar kyat' },
+  { code: 'BND', name: 'Brunei dollar' },
+  { code: 'MOP', name: 'Macanese pataca' },
+  { code: 'TWD', name: 'Taiwan dollar' },
+  { code: 'KRW', name: 'South Korean won' },
+  { code: 'MNT', name: 'Mongolian tögrög' },
+  { code: 'NGN', name: 'Nigerian naira' },
+  { code: 'GHS', name: 'Ghanaian cedi' },
+  { code: 'KES', name: 'Kenyan shilling' },
+  { code: 'UGX', name: 'Ugandan shilling' },
+  { code: 'TZS', name: 'Tanzanian shilling' },
+  { code: 'ZAR', name: 'South African rand' },
+  { code: 'EGP', name: 'Egyptian pound' },
+  { code: 'MAD', name: 'Moroccan dirham' },
+  { code: 'MUR', name: 'Mauritian rupee' },
+  { code: 'XOF', name: 'West African CFA franc' },
+  { code: 'XAF', name: 'Central African CFA franc' },
+  { code: 'RWF', name: 'Rwandan franc' },
+  { code: 'ZMW', name: 'Zambian kwacha' },
+  { code: 'BWP', name: 'Botswana pula' },
+  { code: 'MXN', name: 'Mexican peso' },
+  { code: 'BRL', name: 'Brazilian real' },
+  { code: 'CLP', name: 'Chilean peso' },
+  { code: 'COP', name: 'Colombian peso' },
+  { code: 'PEN', name: 'Peruvian sol' },
+  { code: 'UYU', name: 'Uruguayan peso' },
+  { code: 'ARS', name: 'Argentine peso' },
+  { code: 'JMD', name: 'Jamaican dollar' },
+  { code: 'BBD', name: 'Barbadian dollar' },
+  { code: 'TTD', name: 'Trinidad & Tobago dollar' },
+  { code: 'XCD', name: 'East Caribbean dollar' },
+  { code: 'RUB', name: 'Russian rouble' },
+  { code: 'UAH', name: 'Ukrainian hryvnia' },
+  { code: 'GEL', name: 'Georgian lari' },
+  { code: 'KZT', name: 'Kazakhstani tenge' },
+  { code: 'AMD', name: 'Armenian dram' },
+  { code: 'AZN', name: 'Azerbaijani manat' },
+  { code: 'UZS', name: 'Uzbekistani som' },
+  { code: 'FJD', name: 'Fijian dollar' },
+  { code: 'PGK', name: 'Papua New Guinean kina' },
+  { code: 'WST', name: 'Samoan tala' },
+  { code: 'TOP', name: 'Tongan paʻanga' },
+  { code: 'CDF', name: 'Congolese franc' },
+  { code: 'ETB', name: 'Ethiopian birr' },
+  { code: 'DZD', name: 'Algerian dinar' },
+  { code: 'TND', name: 'Tunisian dinar' },
+  { code: 'IQD', name: 'Iraqi dinar' },
+  { code: 'LBP', name: 'Lebanese pound' },
+  { code: 'HRK', name: 'Croatian kuna' },
+] as const;
+
+export type FiatCurrencyCode = (typeof FIAT_CATALOG)[number]['code'];
+
+export function filterFiatCatalog(query: string): (typeof FIAT_CATALOG)[number][] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [...FIAT_CATALOG];
+  return FIAT_CATALOG.filter(
+    (c) => c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q),
+  );
+}
+
+export function fiatLabel(code: FiatCurrencyCode): string {
+  const row = FIAT_CATALOG.find((c) => c.code === code);
+  return row ? `${row.name} (${row.code})` : code;
+}
