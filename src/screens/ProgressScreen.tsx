@@ -7,7 +7,7 @@ import { BrainCircuit, LineChart, ShieldCheck } from 'lucide-react-native';
 
 /**
  * Flow 5 — Credit score (screen 12) + Flow 6 — AI assistant (screen 13), plus sign-out.
- * Matches the blueprint; all data mocked.
+ * Blueprint layout; illustrative scoring and alerts only.
  */
 export function ProgressScreen() {
   const { colors } = useTheme();
@@ -28,7 +28,7 @@ export function ProgressScreen() {
       <ScrollView contentContainerStyle={styles.pad}>
         <Text style={[styles.title, { color: colors.navy }]}>Progress</Text>
         <Text style={[styles.lead, { color: colors.inkSecondary }]}>
-          Credit building and AI nudges — prototype only, no bureau reporting yet.
+          Your UK financial foundation, built automatically.
         </Text>
 
         <View style={[styles.block, { borderColor: colors.border, backgroundColor: colors.paper }]}>
@@ -38,8 +38,8 @@ export function ProgressScreen() {
           </View>
           <Text style={[styles.score, { color: colors.emerald }]}>562</Text>
           <Text style={[styles.blockBody, { color: colors.inkSecondary }]}>
-            Mock Experian-style score. Rent payments reported via Haven (when you connect rent reporting) will appear
-            here as “building factors” — same idea as rent-reporting products, integrated in one app.
+            Haven brings together your repayment behaviour and regular payments — including rent you report — so your UK
+            credit picture grows in one place.
           </Text>
           <View style={[styles.pillRow, { borderTopColor: colors.border }]}>
             <Text style={[styles.pillLabel, { color: colors.inkTertiary }]}>Building your file</Text>
@@ -53,8 +53,7 @@ export function ProgressScreen() {
             <Text style={[styles.blockTitle, { color: colors.navy }]}>AI money assistant</Text>
           </View>
           <Text style={[styles.blockBody, { color: colors.inkSecondary }]}>
-            Upcoming payments, alerts, and short recommendations — the “agentic” layer from your product plan, scoped to
-            student life (mock).
+            Personalised alerts based on your spending patterns, rent schedule, and parent transfer history.
           </Text>
           <View style={styles.alertList}>
             <AlertLine
@@ -64,12 +63,12 @@ export function ProgressScreen() {
             />
             <AlertLine
               title="FX heads-up"
-              body="If parents send in your home currency this week, indicative savings vs. last month’s desktop rate (mock)."
+              body="If your parents send in your home currency this week, we'll surface how today's rate compares to your recent transfers."
               colors={colors}
             />
             <AlertLine
               title="Spend check"
-              body="Groceries ran 12% above your 4-week average — optional nudge only (mock)."
+              body="Groceries ran 12% above your 4-week rolling average — here's a gentle heads-up."
               colors={colors}
             />
           </View>
@@ -78,8 +77,7 @@ export function ProgressScreen() {
         <View style={[styles.trust, { borderColor: colors.border, backgroundColor: colors.paper }]}>
           <ShieldCheck color={colors.emerald} size={22} />
           <Text style={[styles.trustText, { color: colors.inkSecondary }]}>
-            Short reassurance copy for families would mirror your sponsor bank’s customer materials in production — here
-            it’s placeholder only.
+            Your cleared funds remain safeguarded at our regulated banking partner — Haven never holds them directly.
           </Text>
         </View>
 
