@@ -125,10 +125,7 @@ export function HavenDashboardScreen() {
         </View>
 
         <View style={styles.sectionLabelRow}>
-          <Text style={[styles.sectionLabel, { color: colors.navy }]}>Pre-arrival</Text>
-          <Text style={[styles.sectionHint, { color: colors.inkTertiary }]}>
-            Checklist from your onboarding story (mock state)
-          </Text>
+          <Text style={[styles.sectionLabel, { color: colors.navy }]}>Your arrival checklist</Text>
         </View>
 
         <View style={[styles.checklistCard, { backgroundColor: colors.paper, borderColor: colors.border }]}>
@@ -139,12 +136,12 @@ export function HavenDashboardScreen() {
           />
           <ChecklistRow
             title="Haven account & verification"
-            description="You completed the mock signup flow — offer letter & passport simulated."
+            description="Your university offer and identity check are complete — you're ready for UK banking."
             complete
           />
           <ChecklistRow
             title="Inbound transfer from parents"
-            description="Share UK details and simulate a transfer in the Receive tab."
+            description="Share your Haven details from the Receive tab so family can send your first deposit."
             complete={false}
             onPress={() => navigation.navigate('ReceiveMoney')}
             isLast
@@ -175,7 +172,6 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     fontWeight: '700',
   },
-  sectionHint: { fontSize: 13 },
   txCard: { borderRadius: 16, borderWidth: 1, overflow: 'hidden' },
   txRow: {
     flexDirection: 'row',
