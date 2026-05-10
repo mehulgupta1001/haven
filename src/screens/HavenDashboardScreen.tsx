@@ -25,6 +25,14 @@ type Nav = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList>
 >;
 
+function timeOfDayGreeting(): string {
+  const h = new Date().getHours();
+  if (h >= 5 && h <= 11) return 'Good morning';
+  if (h >= 12 && h <= 16) return 'Good afternoon';
+  if (h >= 17 && h <= 21) return 'Good evening';
+  return 'Good night';
+}
+
 /**
  * Flow 2 — Home: balance, recent transactions, quick pathways into other flows (blueprint).
  */
@@ -60,6 +68,11 @@ export function HavenDashboardScreen() {
     void load();
   }, [load]);
 
+  const greeting = timeOfDayGreeting();
+  const nameTrimmed = profile?.displayName?.trim();
+  const firstName = nameTrimmed ? nameTrimmed.split(/\s+/)[0] : undefined;
+  const headline = firstName ? `${greeting}, ${firstName}` : 'Welcome to Haven';
+
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.paperWarm }]} edges={['top']}>
       <ScrollView
@@ -72,11 +85,9 @@ export function HavenDashboardScreen() {
           <Text style={[styles.kicker, { color: colors.emerald }]}>
             {profile?.universityName ?? 'Your university'}
           </Text>
-          <Text style={[styles.title, { color: colors.navy }]}>Home</Text>
+          <Text style={[styles.title, { color: colors.navy }]}>{headline}</Text>
           <Text style={[styles.subtitle, { color: colors.inkSecondary }]}>
-            {profile?.displayName
-              ? `${profile.displayName} — ${profile.email}`
-              : 'Balance, recent activity, and next steps.'}
+            {"Here's your financial snapshot."}
           </Text>
         </View>
 
