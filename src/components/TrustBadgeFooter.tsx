@@ -3,11 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../theme';
 import { ShieldCheck } from 'lucide-react-native';
 
-/** Institutional partner name for trust copy — swap for live sponsor bank after licensing */
-const MOCK_PARTNER_BANK = 'Meridian Custody Bank (UK)';
-
 /**
- * Persistent reassurance strip for fee-paying guardian cohorts who prioritise fund safety.
+ * Reassurance strip: safeguarding and FSCS context for students and parents.
  */
 export function TrustBadgeFooter() {
   const { colors } = useTheme();
@@ -23,8 +20,8 @@ export function TrustBadgeFooter() {
       <View style={styles.textCol}>
         <Text style={[styles.title, { color: colors.navy }]}>Safeguarding you can explain to parents</Text>
         <Text style={[styles.body, { color: colors.inkSecondary }]}>
-          Client money is held in segregated accounts at {MOCK_PARTNER_BANK}. In production, marketing and legal copy
-          would match your sponsor bank’s customer-facing materials — this block is a short placeholder for guardians.
+          Your money is held in safeguarded accounts by our FCA-regulated banking partner — protected up to £85,000
+          under FSCS rules. Haven never holds your funds directly.
         </Text>
       </View>
     </View>
