@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import {
+  Pressable,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -18,6 +19,7 @@ import { TrustBadgeFooter } from '../components/TrustBadgeFooter';
 import { CreditJourneyWidget } from '../components/CreditJourneyWidget';
 import { ChecklistRow } from '../components/ChecklistRow';
 import { useAuth } from '../context/AuthContext';
+import { Inbox } from 'lucide-react-native';
 import type { MainTabParamList, RootStackParamList } from '../navigation/types';
 
 type Nav = CompositeNavigationProp<
@@ -99,29 +101,50 @@ export function HavenDashboardScreen() {
 
         <Text style={[styles.sectionLabel, { color: colors.navy }]}>Recent transactions</Text>
         <View style={[styles.txCard, { borderColor: colors.border, backgroundColor: colors.paper }]}>
-          {tx.map((t, i) => (
-            <View
-              key={t.id}
-              style={[
-                styles.txRow,
-                { borderBottomColor: colors.border },
-                i === tx.length - 1 && styles.txRowLast,
-              ]}
-            >
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.txTitle, { color: colors.ink }]}>{t.title}</Text>
-                <Text style={[styles.txDate, { color: colors.inkTertiary }]}>{t.occurredAt.slice(0, 10)}</Text>
-              </View>
-              <Text
-                style={[
-                  styles.txAmt,
-                  { color: t.direction === 'credit' ? colors.emeraldDark : colors.ink },
+          {tx.length === 0 ? (
+            <View style={styles.txEmpty}>
+              <Inbox color={colors.inkTertiary} size={32} />
+              <Text style={[styles.txEmptyTitle, { color: colors.inkSecondary }]}>No transactions yet</Text>
+              <Text style={[styles.txEmptySubtitle, { color: colors.inkTertiary }]}>
+                Share your account details with your parents to receive your first transfer.
+              </Text>
+              <Pressable
+                onPress={() => navigation.navigate('ReceiveMoney')}
+                style={({ pressed }) => [
+                  styles.txEmptyButton,
+                  { borderColor: colors.navy, opacity: pressed ? 0.75 : 1 },
                 ]}
               >
-                {t.direction === 'credit' ? '+' : '−'}£{t.amountGbp}
-              </Text>
+                <Text style={[styles.txEmptyButtonText, { color: colors.navy }]}>
+                  Share account details →
+                </Text>
+              </Pressable>
             </View>
-          ))}
+          ) : (
+            tx.map((t, i) => (
+              <View
+                key={t.id}
+                style={[
+                  styles.txRow,
+                  { borderBottomColor: colors.border },
+                  i === tx.length - 1 && styles.txRowLast,
+                ]}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.txTitle, { color: colors.ink }]}>{t.title}</Text>
+                  <Text style={[styles.txDate, { color: colors.inkTertiary }]}>{t.occurredAt.slice(0, 10)}</Text>
+                </View>
+                <Text
+                  style={[
+                    styles.txAmt,
+                    { color: t.direction === 'credit' ? colors.emeraldDark : colors.ink },
+                  ]}
+                >
+                  {t.direction === 'credit' ? '+' : '−'}£{t.amountGbp}
+                </Text>
+              </View>
+            ))
+          )}
         </View>
 
         <View style={styles.sectionLabelRow}>
@@ -173,6 +196,23 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   txCard: { borderRadius: 16, borderWidth: 1, overflow: 'hidden' },
+  txEmpty: {
+    paddingVertical: 28,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    gap: 10,
+  },
+  txEmptyTitle: { fontSize: 15, fontWeight: '600', textAlign: 'center' },
+  txEmptySubtitle: { fontSize: 13, lineHeight: 18, textAlign: 'center' },
+  txEmptyButton: {
+    marginTop: 6,
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    alignSelf: 'center',
+  },
+  txEmptyButtonText: { fontSize: 14, fontWeight: '700' },
   txRow: {
     flexDirection: 'row',
     alignItems: 'center',
