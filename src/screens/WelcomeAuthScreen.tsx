@@ -14,13 +14,21 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../theme';
 import { useAuth } from '../context/AuthContext';
 import type { FiatCurrencyCode } from '../services/types';
-import { ChevronRight, CreditCard, FileText, ScanFace, ShieldCheck } from 'lucide-react-native';
+import {
+  ArrowDownCircle,
+  ChevronRight,
+  CreditCard,
+  FileText,
+  ScanFace,
+  ShieldCheck,
+  TrendingUp,
+} from 'lucide-react-native';
 import { FiatCurrencyPickerSheet } from '../components/FiatCurrencyPickerSheet';
 import { fiatLabel } from '../data/fiatCurrencies';
 
 type Mode = 'signup' | 'signin';
 
-type SignupStep = 'credentials' | 'offer' | 'passport' | 'confirm';
+type SignupStep = 'landing' | 'credentials' | 'offer' | 'passport' | 'confirm';
 
 /**
  * Flow 1 — Pre-arrival onboarding (screens 1–5): welcome, university email sign-up, offer letter, passport, card prep.
@@ -30,7 +38,7 @@ export function WelcomeAuthScreen() {
   const { colors } = useTheme();
   const { signUp, signIn, busy, error, clearError } = useAuth();
   const [mode, setMode] = useState<Mode>('signup');
-  const [step, setStep] = useState<SignupStep>('credentials');
+  const [step, setStep] = useState<SignupStep>('landing');
   const [formError, setFormError] = useState<string | null>(null);
 
   const [displayName, setDisplayName] = useState('');
@@ -41,7 +49,7 @@ export function WelcomeAuthScreen() {
   const [currencyPickerOpen, setCurrencyPickerOpen] = useState(false);
 
   const resetSignup = () => {
-    setStep('credentials');
+    setStep('landing');
     setFormError(null);
   };
 
@@ -120,6 +128,62 @@ export function WelcomeAuthScreen() {
 
           {mode === 'signup' ? (
             <>
+              {step === 'landing' ? (
+                <View style={styles.landingBlock}>
+                  <Text style={[styles.landingWordmark, { color: colors.navy }]}>Haven</Text>
+                  <Text style={[styles.landingTagline, { color: colors.inkSecondary }]}>
+                    Your financial home, from the moment you land.
+                  </Text>
+                  <View style={styles.landingFeatures}>
+                    <View style={styles.featureRow}>
+                      <ShieldCheck color={colors.emerald} size={28} />
+                      <View style={styles.featureTextCol}>
+                        <Text style={[styles.featureTitle, { color: colors.navy }]}>Pre-arrival account setup</Text>
+                        <Text style={[styles.featureSubtitle, { color: colors.inkSecondary }]}>
+                          Open your UK account before you land, using your offer letter.
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={styles.featureRow}>
+                      <ArrowDownCircle color={colors.navy} size={28} />
+                      <View style={styles.featureTextCol}>
+                        <Text style={[styles.featureTitle, { color: colors.navy }]}>Instant parent transfers</Text>
+                        <Text style={[styles.featureSubtitle, { color: colors.inkSecondary }]}>
+                          Receive money from home in any currency, with no hidden fees.
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={styles.featureRow}>
+                      <TrendingUp color={colors.emerald} size={28} />
+                      <View style={styles.featureTextCol}>
+                        <Text style={[styles.featureTitle, { color: colors.navy }]}>UK credit building</Text>
+                        <Text style={[styles.featureSubtitle, { color: colors.inkSecondary }]}>
+                          Every rent payment builds your UK credit history automatically.
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <Pressable
+                    onPress={() => setStep('credentials')}
+                    style={({ pressed }) => [styles.primary, { backgroundColor: colors.navy, opacity: pressed ? 0.9 : 1 }]}
+                  >
+                    <Text style={[styles.primaryText, { color: colors.paper }]}>Get started</Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setMode('signin');
+                      clearError();
+                      setFormError(null);
+                    }}
+                    style={styles.landingSignInLink}
+                  >
+                    <Text style={[styles.landingSignInText, { color: colors.inkSecondary }]}>
+                      Already have an account? Sign in
+                    </Text>
+                  </Pressable>
+                </View>
+              ) : null}
+
               {step === 'credentials' ? (
                 <>
                   <Text style={[styles.stepHint, { color: colors.inkTertiary }]}>Step 1 of 4 — Account</Text>
@@ -410,4 +474,14 @@ const styles = StyleSheet.create({
   formErr: { fontSize: 14, textAlign: 'center' },
   trust: { flexDirection: 'row', gap: 12, padding: 14, borderRadius: 14, borderWidth: 1, marginTop: 8 },
   trustText: { flex: 1, fontSize: 12, lineHeight: 18 },
+  landingBlock: { gap: 14 },
+  landingWordmark: { fontSize: 36, fontWeight: '800' },
+  landingTagline: { fontSize: 16, lineHeight: 23 },
+  landingFeatures: { gap: 18, marginTop: 6 },
+  featureRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 14 },
+  featureTextCol: { flex: 1, gap: 4 },
+  featureTitle: { fontSize: 16, fontWeight: '700' },
+  featureSubtitle: { fontSize: 14, lineHeight: 20 },
+  landingSignInLink: { alignItems: 'center', paddingVertical: 8 },
+  landingSignInText: { fontSize: 15, fontWeight: '600', textAlign: 'center' },
 });
