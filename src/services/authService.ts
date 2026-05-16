@@ -14,6 +14,13 @@ export type AuthService = {
   signInMock: (email: string, password: string) => Promise<AuthSession>;
 };
 
+const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+
+/** Prototype: treat accounts as ~3 days old so the card-arrival banner shows ~4 days remaining. */
+function demoCreatedAtIso(): string {
+  return new Date(Date.now() - THREE_DAYS_MS).toISOString();
+}
+
 function mockUserIdFromEmail(email: string): string {
   const core = email.split('@')[0]?.slice(0, 8) ?? 'student';
   return `usr_hvn_${core}`;
@@ -37,6 +44,7 @@ export const authService: AuthService = {
       universityName: 'University College London',
       receiveCurrency: 'MYR',
       universityEmailVerified: false,
+      createdAt: demoCreatedAtIso(),
     };
   },
 
@@ -51,6 +59,7 @@ export const authService: AuthService = {
       universityName: universityLabelFromEmail(e),
       receiveCurrency: payload.receiveCurrency,
       universityEmailVerified: false,
+      createdAt: demoCreatedAtIso(),
     };
   },
 

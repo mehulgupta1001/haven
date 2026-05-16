@@ -17,6 +17,8 @@ export type AuthSession = {
   /** Currency guardians most often send — must exist in the fiat catalog */
   receiveCurrency: FiatCurrencyCode;
   universityEmailVerified: boolean;
+  /** ISO-8601 signup time — card delivery banner (mock may backdate for demos) */
+  createdAt?: string;
 };
 
 export type KycStage = 'identity' | 'visa' | 'university_email';
