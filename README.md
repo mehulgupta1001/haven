@@ -70,6 +70,7 @@ This repo uses **mock services only** for balances, transfers, and cards — the
 
 ```
 ├── App.tsx
+├── LICENSE
 ├── src/
 │   ├── components/    # Reusable UI (balance card, trust footer, etc.)
 │   ├── context/       # Auth, currency
@@ -91,7 +92,7 @@ This repo uses **mock services only** for balances, transfers, and cards — the
 
 ## Licence
 
-No licence is included by default. Add a `LICENSE` file if you want to specify terms for others.
+This project is **proprietary**. All rights are reserved. See **[LICENSE](LICENSE)** for the full terms.
 
 ## Disclaimer
 
