@@ -46,10 +46,24 @@ type SignupStep =
   | 'credentials'
   | 'offer_letter'
   | 'passport'
+  | 'evisa'
   | 'confirm';
 
+const GOV_VIEW_IMMIGRATION_URL = 'https://www.gov.uk/view-prove-immigration-status';
+
+function formatShareCode(raw: string): string {
+  const alnum = raw.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 9);
+  if (alnum.length <= 3) return alnum;
+  if (alnum.length <= 6) return `${alnum.slice(0, 3)}-${alnum.slice(3)}`;
+  return `${alnum.slice(0, 3)}-${alnum.slice(3, 6)}-${alnum.slice(6, 9)}`;
+}
+
+function isValidShareCode(formatted: string): boolean {
+  return /^[A-Z][A-Z0-9]{2}-[A-Z0-9]{3}-[A-Z0-9]{3}$/.test(formatted.trim());
+}
+
 /**
- * Flow 1 — Pre-arrival onboarding (screens 1–5): welcome, university email sign-up, offer letter, passport, card prep.
+ * Flow 1 — Pre-arrival onboarding: welcome, credentials, offer letter, passport, eVisa share code, confirmation.
  * Sign-in reuses stored mock profile on device.
  */
 export function WelcomeAuthScreen() {
@@ -77,6 +91,12 @@ export function WelcomeAuthScreen() {
     'idle',
   );
 
+  const [shareCodeInput, setShareCodeInput] = useState('');
+  const [evisaVerifyPhase, setEvisaVerifyPhase] = useState<'idle' | 'verifying' | 'success'>('idle');
+  const [brpAlternativeOpen, setBrpAlternativeOpen] = useState(false);
+  const [brpUploadStatus, setBrpUploadStatus] = useState<'idle' | 'uploading' | 'verified'>('idle');
+  const [pendingEvisaVerification, setPendingEvisaVerification] = useState(false);
+
   const resetSignup = () => {
     setStep('landing');
     setFormError(null);
@@ -85,6 +105,11 @@ export function WelcomeAuthScreen() {
     setSelectedUniversity(null);
     setUniversityPickerOpen(false);
     setOfferLetterStatus('idle');
+    setShareCodeInput('');
+    setEvisaVerifyPhase('idle');
+    setBrpAlternativeOpen(false);
+    setBrpUploadStatus('idle');
+    setPendingEvisaVerification(false);
   };
 
   const onSubmitSignIn = async () => {
@@ -188,6 +213,52 @@ export function WelcomeAuthScreen() {
     setPilotError(null);
     setStep('credentials');
   };
+
+  const onShareCodeChange = (raw: string) => {
+    setFormError(null);
+    setShareCodeInput(formatShareCode(raw));
+  };
+
+  const openGovImmigrationLink = async () => {
+    try {
+      const ok = await Linking.canOpenURL(GOV_VIEW_IMMIGRATION_URL);
+      if (ok) await Linking.openURL(GOV_VIEW_IMMIGRATION_URL);
+      else Alert.alert('Unable to open', 'Cannot open this link on this device.');
+    } catch {
+      Alert.alert('Unable to open', 'Something went wrong opening the page.');
+    }
+  };
+
+  const onEvisaContinue = () => {
+    setFormError(null);
+    if (evisaVerifyPhase === 'verifying' || evisaVerifyPhase === 'success') return;
+
+    if (brpAlternativeOpen) {
+      if (brpUploadStatus !== 'verified') {
+        setFormError('Upload a photo of your BRP, or use a share code instead.');
+        return;
+      }
+    } else if (!isValidShareCode(shareCodeInput)) {
+      setFormError('Enter a valid 9-character share code (e.g. W7X-B4K-2MN).');
+      return;
+    }
+
+    setPendingEvisaVerification(false);
+    setEvisaVerifyPhase('verifying');
+    void (async () => {
+      await mockDelay(1500);
+      setEvisaVerifyPhase('success');
+    })();
+  };
+
+  useEffect(() => {
+    if (evisaVerifyPhase !== 'success') return;
+    const t = setTimeout(() => {
+      setEvisaVerifyPhase('idle');
+      setStep('confirm');
+    }, 1200);
+    return () => clearTimeout(t);
+  }, [evisaVerifyPhase]);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.paperWarm }]} edges={['top', 'bottom']}>
@@ -337,7 +408,7 @@ export function WelcomeAuthScreen() {
 
               {step === 'credentials' ? (
                 <>
-                  <Text style={[styles.stepHint, { color: colors.inkTertiary }]}>Step 1 of 4 — Account</Text>
+                  <Text style={[styles.stepHint, { color: colors.inkTertiary }]}>Step 1 of 5 — Account</Text>
                   <Field label="Full name (optional)" colors={colors}>
                     <TextInput
                       value={displayName}
@@ -462,7 +533,7 @@ export function WelcomeAuthScreen() {
 
               {step === 'offer_letter' ? (
                 <View style={styles.stepBlock}>
-                  <Text style={[styles.stepHint, { color: colors.inkTertiary }]}>Step 2 of 4 — Offer letter</Text>
+                  <Text style={[styles.stepHint, { color: colors.inkTertiary }]}>Step 2 of 5 — Offer letter</Text>
                   <Text style={[styles.stepTitleOffer, { color: colors.navy }]}>Verify your place</Text>
                   <Text style={[styles.stepBodyOffer, { color: colors.inkSecondary }]}>
                     Upload your university offer letter or CAS number confirmation. This lets us open your account before
@@ -543,14 +614,14 @@ export function WelcomeAuthScreen() {
 
               {step === 'passport' ? (
                 <View style={styles.stepBlock}>
-                  <Text style={[styles.stepHint, { color: colors.inkTertiary }]}>Step 3 of 4 — Passport</Text>
+                  <Text style={[styles.stepHint, { color: colors.inkTertiary }]}>Step 3 of 5 — Passport</Text>
                   <ScanFace color={colors.navy} size={36} style={{ alignSelf: 'center' }} />
                   <Text style={[styles.stepTitle, { color: colors.navy }]}>Identity check</Text>
                   <Text style={[styles.stepBody, { color: colors.inkSecondary }]}>
                     We’ll verify your passport chip and take a quick selfie so we can confirm your identity.
                   </Text>
                   <Pressable
-                    onPress={() => setStep('confirm')}
+                    onPress={() => setStep('evisa')}
                     style={({ pressed }) => [styles.primary, { backgroundColor: colors.navy, opacity: pressed ? 0.9 : 1 }]}
                   >
                     <Text style={[styles.primaryText, { color: colors.paper }]}>Continue verification</Text>
@@ -561,14 +632,187 @@ export function WelcomeAuthScreen() {
                 </View>
               ) : null}
 
+              {step === 'evisa' ? (
+                <View style={styles.stepBlock}>
+                  <Text style={[styles.stepHint, { color: colors.inkTertiary }]}>Step 4 of 5 — UK visa</Text>
+                  {evisaVerifyPhase === 'success' ? (
+                    <View style={{ alignItems: 'center', gap: 12, paddingVertical: 16 }}>
+                      <CheckCircle2 color={colors.emerald} size={48} strokeWidth={2.2} />
+                      <Text style={[styles.stepTitle, { color: colors.navy }]}>
+                        {"eVisa verified — you're eligible to study in the UK"}
+                      </Text>
+                    </View>
+                  ) : (
+                    <>
+                      <Text style={[styles.stepTitleOffer, { color: colors.navy }]}>Verify your UK visa status</Text>
+                      <Text style={[styles.stepBodyOffer, { color: colors.inkSecondary }]}>
+                        The UK Home Office now issues eVisas instead of physical BRP cards. Haven accepts your eVisa share
+                        code directly — no BRP card needed.
+                      </Text>
+
+                      <View
+                        style={[
+                          styles.evisaInfoBanner,
+                          {
+                            backgroundColor: colors.paperWarm,
+                            borderLeftColor: colors.navy,
+                          },
+                        ]}
+                      >
+                        <Text style={[styles.evisaInfoBannerHeading, { color: colors.navy }]}>
+                          What is a share code?
+                        </Text>
+                        <Text style={[styles.evisaInfoBannerBody, { color: colors.inkSecondary }]}>
+                          A share code is a 9-character code from the UK Home Office that proves your right to study in
+                          the UK. You can get yours at gov.uk/view-prove-immigration-status — it takes about 2 minutes.
+                        </Text>
+                        <Pressable onPress={() => void openGovImmigrationLink()} style={styles.evisaLinkRow}>
+                          <Text style={[styles.evisaLinkText, { color: colors.navy }]}>Get your share code →</Text>
+                        </Pressable>
+                      </View>
+
+                      <Field label="Your share code" colors={colors}>
+                        <TextInput
+                          value={shareCodeInput}
+                          onChangeText={onShareCodeChange}
+                          placeholder="e.g. W7X-B4K-2MN"
+                          placeholderTextColor={colors.inkTertiary}
+                          autoCapitalize="characters"
+                          editable={evisaVerifyPhase !== 'verifying'}
+                          maxLength={11}
+                          style={[styles.input, { borderColor: colors.border, color: colors.ink }]}
+                        />
+                      </Field>
+                      <Text style={[styles.evisaHelper, { color: colors.inkTertiary }]}>
+                        Share codes start with a letter and expire after 90 days.
+                      </Text>
+
+                      <Pressable
+                        onPress={() => {
+                          setBrpAlternativeOpen((o) => !o);
+                          setFormError(null);
+                        }}
+                        style={({ pressed }) => [
+                          styles.brpToggleRow,
+                          { borderColor: colors.border, backgroundColor: colors.paper, opacity: pressed ? 0.92 : 1 },
+                        ]}
+                      >
+                        <Text style={[styles.brpToggleText, { color: colors.navy }]}>
+                          I have a physical BRP card instead
+                        </Text>
+                        <ChevronRight color={colors.navy} size={22} />
+                      </Pressable>
+
+                      {brpAlternativeOpen ? (
+                        <View style={{ gap: 10 }}>
+                          <Text style={[styles.stepBody, { color: colors.inkSecondary }]}>
+                            BRP cards are no longer issued for new students, but if you have one from a previous visa, we
+                            accept it. Please upload a photo below.
+                          </Text>
+                          <Pressable
+                            onPress={() => {
+                              if (brpUploadStatus !== 'idle') return;
+                              setBrpUploadStatus('uploading');
+                              void (async () => {
+                                await mockDelay(1500);
+                                setBrpUploadStatus('verified');
+                              })();
+                            }}
+                            disabled={brpUploadStatus === 'uploading'}
+                            style={({ pressed }) => [
+                              styles.offerUploadZone,
+                              {
+                                borderColor: colors.navy,
+                                backgroundColor: colors.paper,
+                                opacity: pressed && brpUploadStatus === 'idle' ? 0.92 : 1,
+                              },
+                            ]}
+                          >
+                            {brpUploadStatus === 'uploading' ? (
+                              <ActivityIndicator color={colors.navy} />
+                            ) : brpUploadStatus === 'verified' ? (
+                              <>
+                                <CheckCircle2 color={colors.emerald} size={44} strokeWidth={2.2} />
+                                <Text style={[styles.offerVerifiedTitle, { color: colors.navy }]}>BRP photo received</Text>
+                              </>
+                            ) : (
+                              <>
+                                <FileText color={colors.navy} size={40} strokeWidth={2} />
+                                <Text style={[styles.offerUploadPrompt, { color: colors.inkSecondary }]}>
+                                  Tap to upload BRP photo
+                                </Text>
+                              </>
+                            )}
+                          </Pressable>
+                          <Text style={[styles.offerFormatsHint, { color: colors.inkTertiary }]}>
+                            PDF, JPG or PNG · Max 10MB
+                          </Text>
+                        </View>
+                      ) : null}
+
+                      <Text style={[styles.evisaFooterNote, { color: colors.inkTertiary }]}>
+                        Haven uses your share code only to verify your right to study. We never store or share it with
+                        third parties beyond our FCA-regulated KYC partner.
+                      </Text>
+
+                      <Pressable
+                        onPress={onEvisaContinue}
+                        disabled={evisaVerifyPhase === 'verifying'}
+                        style={({ pressed }) => [
+                          styles.primary,
+                          {
+                            backgroundColor: colors.navy,
+                            opacity: evisaVerifyPhase === 'verifying' || pressed ? 0.75 : 1,
+                          },
+                        ]}
+                      >
+                        {evisaVerifyPhase === 'verifying' ? (
+                          <ActivityIndicator color={colors.paper} />
+                        ) : (
+                          <Text style={[styles.primaryText, { color: colors.paper }]}>Continue</Text>
+                        )}
+                      </Pressable>
+
+                      <Pressable
+                        onPress={() => {
+                          setPendingEvisaVerification(true);
+                          setFormError(null);
+                          setStep('confirm');
+                        }}
+                        style={styles.evisaSkipLink}
+                      >
+                        <Text style={[styles.evisaSkipLinkText, { color: colors.navy }]}>
+                          {"I don't have this yet — remind me later"}
+                        </Text>
+                      </Pressable>
+
+                      <Pressable
+                        onPress={() => {
+                          setStep('passport');
+                          setEvisaVerifyPhase('idle');
+                          setFormError(null);
+                        }}
+                      >
+                        <Text style={{ textAlign: 'center', color: colors.inkSecondary }}>Back</Text>
+                      </Pressable>
+                    </>
+                  )}
+                </View>
+              ) : null}
+
               {step === 'confirm' ? (
                 <View style={styles.stepBlock}>
-                  <Text style={[styles.stepHint, { color: colors.inkTertiary }]}>Step 4 of 4</Text>
+                  <Text style={[styles.stepHint, { color: colors.inkTertiary }]}>Step 5 of 5</Text>
                   <CreditCard color={colors.emerald} size={40} style={{ alignSelf: 'center' }} />
                   <Text style={[styles.stepTitle, { color: colors.navy }]}>Account created</Text>
                   <Text style={[styles.stepBody, { color: colors.inkSecondary }]}>
                     Your Haven debit card is being prepared — you’ll see it in the Card tab as soon as it’s issued.
                   </Text>
+                  {pendingEvisaVerification ? (
+                    <Text style={[styles.stepBody, { color: colors.inkTertiary, fontSize: 13 }]}>
+                      Visa checks are pending — you can finish proving your immigration status later from your profile.
+                    </Text>
+                  ) : null}
                   <Pressable
                     onPress={finishSignup}
                     disabled={busy}
@@ -583,7 +827,11 @@ export function WelcomeAuthScreen() {
                       <Text style={[styles.primaryText, { color: colors.paper }]}>Enter Haven</Text>
                     )}
                   </Pressable>
-                  <Pressable onPress={() => setStep('passport')}>
+                  <Pressable
+                    onPress={() => {
+                      setStep('evisa');
+                    }}
+                  >
                     <Text style={{ textAlign: 'center', color: colors.inkSecondary }}>Back</Text>
                   </Pressable>
                 </View>
@@ -961,4 +1209,29 @@ const styles = StyleSheet.create({
   pilotWaitlist: { alignSelf: 'center', paddingVertical: 8 },
   pilotWaitlistText: { fontSize: 13, fontWeight: '600', textAlign: 'center' },
   pilotBack: { textAlign: 'center', fontSize: 13, paddingVertical: 4 },
+  evisaInfoBanner: {
+    borderLeftWidth: 4,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    gap: 10,
+  },
+  evisaInfoBannerHeading: { fontSize: 13, fontWeight: '700' },
+  evisaInfoBannerBody: { fontSize: 13, lineHeight: 20 },
+  evisaLinkRow: { alignSelf: 'flex-start', paddingVertical: 4 },
+  evisaLinkText: { fontSize: 14, fontWeight: '700' },
+  evisaHelper: { fontSize: 12, lineHeight: 16, marginTop: 6 },
+  brpToggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  brpToggleText: { fontSize: 15, fontWeight: '600', flex: 1, paddingRight: 12 },
+  evisaFooterNote: { fontSize: 11, lineHeight: 16, textAlign: 'center', marginTop: 4 },
+  evisaSkipLink: { alignItems: 'center', paddingVertical: 8 },
+  evisaSkipLinkText: { fontSize: 14, fontWeight: '600', textAlign: 'center' },
 });
