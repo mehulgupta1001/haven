@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Linking,
@@ -23,11 +23,33 @@ import { CreditJourneyWidget } from '../components/CreditJourneyWidget';
 import { ChecklistRow } from '../components/ChecklistRow';
 import { useAuth } from '../context/AuthContext';
 import type { MainTabParamList, RootStackParamList } from '../navigation/types';
-import { Eye, Inbox, ChevronRight, Lock, Shield } from 'lucide-react-native';
+import {
+  AlertCircle,
+  Eye,
+  Inbox,
+  Mail,
+  Package,
+  ChevronRight,
+  Lock,
+  Shield,
+  Smartphone,
+  X,
+} from 'lucide-react-native';
 
 /** Griffin / FCA: firm page URL as published by Griffin (`griffin.com/company-facts`). */
 const GRIFFIN_FCA_FIRM_REF_URL =
   'https://register.fca.org.uk/s/firm?id=0014G00002uxwpEQAQ';
+const ROYAL_MAIL_REDELIVERY_URL = 'https://www.royalmail.com/redelivery';
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const CARD_ARRIVAL_WINDOW_DAYS = 7;
+/** When `createdAt` is missing from storage, assume ~3 days ago so the prototype banner appears. */
+const FALLBACK_CREATED_AT_MS_AGO = 3 * MS_PER_DAY;
+
+function daysSinceAccountCreated(createdAtIso: string): number {
+  const t = new Date(createdAtIso).getTime();
+  return Math.floor((Date.now() - t) / MS_PER_DAY);
+}
 
 type Nav = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'HavenHome'>,
@@ -54,6 +76,18 @@ export function HavenDashboardScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [creditKey, setCreditKey] = useState(0);
   const [parentalViewMode, setParentalViewMode] = useState(false);
+  const [cardBannerDismissed, setCardBannerDismissed] = useState(false);
+
+  const cardArrivalBanner = useMemo(() => {
+    if (!profile) return { show: false, progress: 0, remainingDays: 7, daysElapsed: 0 };
+    const createdIso =
+      profile.createdAt ?? new Date(Date.now() - FALLBACK_CREATED_AT_MS_AGO).toISOString();
+    const daysElapsed = daysSinceAccountCreated(createdIso);
+    const show = !cardBannerDismissed && daysElapsed < CARD_ARRIVAL_WINDOW_DAYS;
+    const progress = Math.min(Math.max(daysElapsed, 0), CARD_ARRIVAL_WINDOW_DAYS) / CARD_ARRIVAL_WINDOW_DAYS;
+    const remainingDays = Math.max(1, CARD_ARRIVAL_WINDOW_DAYS - daysElapsed);
+    return { show, progress, remainingDays, daysElapsed };
+  }, [profile, cardBannerDismissed]);
 
   const load = useCallback(async () => {
     const [s, list] = await Promise.all([
@@ -74,7 +108,7 @@ export function HavenDashboardScreen() {
     }
   }, [load]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     void load();
   }, [load]);
 
@@ -90,6 +124,16 @@ export function HavenDashboardScreen() {
       else Alert.alert('Unable to open', 'Cannot open this link on this device.');
     } catch {
       Alert.alert('Unable to open', 'Something went wrong opening the FCA Register.');
+    }
+  };
+
+  const openRoyalMailRedelivery = async () => {
+    try {
+      const supported = await Linking.canOpenURL(ROYAL_MAIL_REDELIVERY_URL);
+      if (supported) await Linking.openURL(ROYAL_MAIL_REDELIVERY_URL);
+      else Alert.alert('Unable to open', 'Cannot open this link on this device.');
+    } catch {
+      Alert.alert('Unable to open', 'Something went wrong opening the page.');
     }
   };
 
@@ -110,6 +154,90 @@ export function HavenDashboardScreen() {
             {"Here's your financial snapshot."}
           </Text>
         </View>
+
+        {cardArrivalBanner.show ? (
+          <View style={[styles.cardBanner, { backgroundColor: colors.navyLight, marginBottom: 12 }]}>
+            <Pressable
+              onPress={() => setCardBannerDismissed(true)}
+              hitSlop={12}
+              style={styles.cardBannerDismiss}
+              accessibilityRole="button"
+              accessibilityLabel="Dismiss card arrival message"
+            >
+              <X color={colors.paper} size={20} strokeWidth={2} />
+            </Pressable>
+            <View style={styles.cardBannerTopRow}>
+              <Package color={colors.paper} size={22} strokeWidth={2} />
+              <Text style={[styles.cardBannerHeadline, { color: colors.paper }]} numberOfLines={2}>
+                {`Your Haven card arrives in about ${cardArrivalBanner.remainingDays} day${
+                  cardArrivalBanner.remainingDays === 1 ? '' : 's'
+                }`}
+              </Text>
+            </View>
+            <View style={[styles.cardBannerProgressTrack, { backgroundColor: 'rgba(255,255,255,0.3)' }]}>
+              <View
+                style={[
+                  styles.cardBannerProgressFill,
+                  {
+                    width: `${cardArrivalBanner.progress * 100}%`,
+                    backgroundColor: colors.emerald,
+                  },
+                ]}
+              />
+            </View>
+
+            <View style={styles.cardBannerDivider} />
+
+            <View style={styles.cardBannerTipRow}>
+              <Smartphone color={colors.paper} size={20} strokeWidth={2} />
+              <View style={styles.cardBannerTipTextCol}>
+                <Text style={[styles.cardBannerTipTitle, { color: colors.paper }]}>
+                  Add to Apple Pay or Google Pay now
+                </Text>
+                <Text style={[styles.cardBannerTipSub, { color: 'rgba(255,255,255,0.85)' }]}>
+                  Works at most London shops, supermarkets and TfL transport instantly.
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.cardBannerDivider} />
+
+            <View style={styles.cardBannerTipRow}>
+              <AlertCircle color={colors.amber} size={20} strokeWidth={2} />
+              <View style={styles.cardBannerTipTextCol}>
+                <Text style={[styles.cardBannerTipTitle, { color: colors.paper }]}>
+                  Some places need a physical card
+                </Text>
+                <Text style={[styles.cardBannerTipSub, { color: 'rgba(255,255,255,0.85)' }]}>
+                  Keep £50-100 cash for smaller shops, markets and university services this week.
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.cardBannerDivider} />
+
+            <View style={styles.cardBannerTipRow}>
+              <Mail color={colors.paper} size={20} strokeWidth={2} />
+              <View style={styles.cardBannerTipTextCol}>
+                <Text style={[styles.cardBannerTipTitle, { color: colors.paper }]}>
+                  Card delivered to your UCL address
+                </Text>
+                <Text style={[styles.cardBannerTipSub, { color: 'rgba(255,255,255,0.85)' }]}>
+                  Not in when it arrives? Rebook delivery at{' '}
+                  <Text
+                    onPress={() => void openRoyalMailRedelivery()}
+                    style={[
+                      styles.cardBannerInlineLink,
+                      { color: colors.paper, textDecorationLine: 'underline' },
+                    ]}
+                  >
+                    royalmail.com/redelivery
+                  </Text>
+                </Text>
+              </View>
+            </View>
+          </View>
+        ) : null}
 
         {summary ? (
           <GlobalBalanceCard balanceGbp={summary.availableBalanceGbp} />
@@ -247,6 +375,15 @@ export function HavenDashboardScreen() {
             </View>
             <ChevronRight color={colors.navy} size={22} />
           </Pressable>
+          <View style={[styles.privacyDivider, { backgroundColor: colors.border }]} />
+          <Pressable
+            onPress={() => navigation.navigate('ComplianceReview', { transferAmount: 1500 })}
+            style={({ pressed }) => [styles.privacySimulateRow, { opacity: pressed ? 0.75 : 1 }]}
+          >
+            <Text style={[styles.privacySimulateText, { color: colors.inkSecondary }]}>
+              Simulate compliance review →
+            </Text>
+          </Pressable>
         </View>
 
         <TrustBadgeFooter />
@@ -344,4 +481,52 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 16,
   },
+  privacySimulateRow: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  privacySimulateText: { fontSize: 13, fontWeight: '600' },
+  cardBanner: {
+    borderRadius: 12,
+    padding: 16,
+    position: 'relative',
+  },
+  cardBannerDismiss: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 2,
+    padding: 4,
+  },
+  cardBannerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    paddingRight: 32,
+  },
+  cardBannerHeadline: { flex: 1, fontSize: 15, fontWeight: '600', lineHeight: 20 },
+  cardBannerProgressTrack: {
+    height: 6,
+    borderRadius: 3,
+    marginTop: 10,
+    overflow: 'hidden',
+  },
+  cardBannerProgressFill: {
+    height: 6,
+    borderRadius: 3,
+  },
+  cardBannerDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    marginVertical: 12,
+  },
+  cardBannerTipRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  cardBannerTipTextCol: { flex: 1, gap: 4 },
+  cardBannerTipTitle: { fontSize: 14, fontWeight: '600', lineHeight: 19 },
+  cardBannerTipSub: { fontSize: 12, lineHeight: 17 },
+  cardBannerInlineLink: { fontSize: 12, lineHeight: 17 },
 });
