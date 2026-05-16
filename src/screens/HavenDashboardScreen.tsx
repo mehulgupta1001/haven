@@ -1,9 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import {
+  Alert,
+  Linking,
   Pressable,
   RefreshControl,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   View,
 } from 'react-native';
@@ -19,8 +22,12 @@ import { TrustBadgeFooter } from '../components/TrustBadgeFooter';
 import { CreditJourneyWidget } from '../components/CreditJourneyWidget';
 import { ChecklistRow } from '../components/ChecklistRow';
 import { useAuth } from '../context/AuthContext';
-import { Inbox } from 'lucide-react-native';
 import type { MainTabParamList, RootStackParamList } from '../navigation/types';
+import { Eye, Inbox, ChevronRight, Lock, Shield } from 'lucide-react-native';
+
+/** Griffin / FCA: firm page URL as published by Griffin (`griffin.com/company-facts`). */
+const GRIFFIN_FCA_FIRM_REF_URL =
+  'https://register.fca.org.uk/s/firm?id=0014G00002uxwpEQAQ';
 
 type Nav = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'HavenHome'>,
@@ -46,6 +53,7 @@ export function HavenDashboardScreen() {
   const [tx, setTx] = useState<LedgerTransaction[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [creditKey, setCreditKey] = useState(0);
+  const [parentalViewMode, setParentalViewMode] = useState(false);
 
   const load = useCallback(async () => {
     const [s, list] = await Promise.all([
@@ -75,6 +83,16 @@ export function HavenDashboardScreen() {
   const firstName = nameTrimmed ? nameTrimmed.split(/\s+/)[0] : undefined;
   const headline = firstName ? `${greeting}, ${firstName}` : 'Welcome to Haven';
 
+  const openGriffinFcaRegistration = async () => {
+    try {
+      const supported = await Linking.canOpenURL(GRIFFIN_FCA_FIRM_REF_URL);
+      if (supported) await Linking.openURL(GRIFFIN_FCA_FIRM_REF_URL);
+      else Alert.alert('Unable to open', 'Cannot open this link on this device.');
+    } catch {
+      Alert.alert('Unable to open', 'Something went wrong opening the FCA Register.');
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.paperWarm }]} edges={['top']}>
       <ScrollView
@@ -98,6 +116,19 @@ export function HavenDashboardScreen() {
         ) : (
           <View style={[styles.skeleton, { backgroundColor: colors.border }]} />
         )}
+
+        <Pressable
+          onPress={() => navigation.navigate('ParentView')}
+          style={({ pressed }) => [
+            styles.parentViewButton,
+            { borderColor: colors.navy, opacity: pressed ? 0.8 : 1 },
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel="Parent view read-only reassurance screen"
+        >
+          <Eye color={colors.navy} size={20} strokeWidth={2} />
+          <Text style={[styles.parentViewButtonLabel, { color: colors.navy }]}>Parent View</Text>
+        </Pressable>
 
         <Text style={[styles.sectionLabel, { color: colors.navy }]}>Recent transactions</Text>
         <View style={[styles.txCard, { borderColor: colors.border, backgroundColor: colors.paper }]}>
@@ -173,7 +204,58 @@ export function HavenDashboardScreen() {
 
         <CreditJourneyWidget refreshToken={creditKey} />
 
+        <Text style={[styles.sectionLabel, { color: colors.navy, marginBottom: 4 }]}>Privacy & Security</Text>
+        <View style={[styles.privacyCard, { borderColor: colors.border, backgroundColor: colors.paper }]}>
+          <View style={styles.privacyRow}>
+            <Shield color={colors.navy} size={22} strokeWidth={2} />
+            <View style={styles.privacyRowText}>
+              <Text style={[styles.privacyTitle, { color: colors.navy }]}>Data Encryption</Text>
+              <Text style={[styles.privacySub, { color: colors.inkSecondary }]}>
+                Your data is encrypted with AES-256 at rest and in transit
+              </Text>
+            </View>
+          </View>
+          <View style={[styles.privacyDivider, { backgroundColor: colors.border }]} />
+
+          <View style={styles.privacyRow}>
+            <Lock color={colors.navy} size={22} strokeWidth={2} />
+            <View style={[styles.privacyRowText, { flexShrink: 1 }]}>
+              <Text style={[styles.privacyTitle, { color: colors.navy }]}>Parental View Mode</Text>
+              <Text style={[styles.privacySub, { color: colors.inkSecondary }]}>
+                Allow family to see balance and rent status only
+              </Text>
+            </View>
+            <Switch
+              value={parentalViewMode}
+              onValueChange={setParentalViewMode}
+              trackColor={{ false: colors.border, true: colors.emerald }}
+              thumbColor={colors.paper}
+            />
+          </View>
+          <View style={[styles.privacyDivider, { backgroundColor: colors.border }]} />
+
+          <Pressable
+            onPress={() => void openGriffinFcaRegistration()}
+            style={({ pressed }) => [styles.privacyRowPress, { opacity: pressed ? 0.85 : 1 }]}
+          >
+            <Shield color={colors.emerald} size={22} strokeWidth={2} />
+            <View style={[styles.privacyRowText, { flexShrink: 1 }]}>
+              <Text style={[styles.privacyTitle, { color: colors.navy }]}>FCA Registration</Text>
+              <Text style={[styles.privacySub, { color: colors.inkSecondary }]}>
+                View Griffin's FCA registration and safeguarding details
+              </Text>
+            </View>
+            <ChevronRight color={colors.navy} size={22} />
+          </Pressable>
+        </View>
+
         <TrustBadgeFooter />
+
+        <Text style={[styles.complianceFooter, { color: colors.inkTertiary }]}>
+          Financial services provided via Griffin Bank (FCA Regulated, Firm Ref: 970920). Vetted for UCL Student
+          Enterprise Pilot. FSCS Protected up to £85,000.
+        </Text>
+
         <View style={{ height: 24 }} />
       </ScrollView>
     </SafeAreaView>
@@ -188,6 +270,18 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: '800', letterSpacing: -0.5 },
   subtitle: { fontSize: 15, lineHeight: 22 },
   skeleton: { height: 160, borderRadius: 16 },
+  parentViewButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignSelf: 'stretch',
+  },
+  parentViewButtonLabel: { fontSize: 15, fontWeight: '700', letterSpacing: 0.2 },
   sectionLabelRow: { gap: 4 },
   sectionLabel: {
     fontSize: 12,
@@ -225,4 +319,29 @@ const styles = StyleSheet.create({
   txDate: { fontSize: 12, marginTop: 2 },
   txAmt: { fontSize: 16, fontWeight: '700' },
   checklistCard: { borderRadius: 16, borderWidth: 1, overflow: 'hidden' },
+  privacyCard: { borderRadius: 16, borderWidth: 1, overflow: 'hidden' },
+  privacyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  privacyRowPress: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  privacyDivider: { height: StyleSheet.hairlineWidth, marginHorizontal: 16 },
+  privacyRowText: { flex: 1, gap: 4 },
+  privacyTitle: { fontSize: 16, fontWeight: '700' },
+  privacySub: { fontSize: 13, lineHeight: 18 },
+  complianceFooter: {
+    fontSize: 11,
+    lineHeight: 16,
+    textAlign: 'center',
+    paddingVertical: 16,
+  },
 });

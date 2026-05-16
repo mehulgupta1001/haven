@@ -4,6 +4,7 @@ export type RootStackParamList = {
   WelcomeAuth: undefined;
   MainTabs: undefined;
   RentReporting: undefined;
+  ParentView: undefined;
 };
 
 export type MainTabParamList = {

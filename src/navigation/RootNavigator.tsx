@@ -9,6 +9,7 @@ import { HavenDashboardScreen } from '../screens/HavenDashboardScreen';
 import { ReceiveMoneyScreen } from '../screens/ReceiveMoneyScreen';
 import { CardManagementScreen } from '../screens/CardManagementScreen';
 import { ProgressScreen } from '../screens/ProgressScreen';
+import { ParentViewScreen } from '../screens/ParentViewScreen';
 import { RentReportingScreen } from '../screens/RentReportingScreen';
 import { WelcomeAuthScreen } from '../screens/WelcomeAuthScreen';
 import type { MainTabParamList, RootStackParamList } from './types';
@@ -86,6 +87,7 @@ function AuthenticatedStack() {
         component={RentReportingScreen}
         options={{ title: 'Rent reporting' }}
       />
+      <Stack.Screen name="ParentView" component={ParentViewScreen} options={{ title: 'Parent view' }} />
     </Stack.Navigator>
   );
 }
