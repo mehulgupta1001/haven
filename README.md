@@ -1,67 +1,98 @@
 # Haven
 
-A **prototype mobile app** built with [Expo](https://expo.dev) and React Native. It explores the experience of a **student-first financial product** for international students arriving at UK universities: balances, receiving money from home in another currency, cards, credit journey, and rent reporting—**all backed by mock services only**. There is no real money, no bank integration, and no production backend.
+*Your financial home, from the moment you land.*
 
-## Requirements
+*Built with React Native · Powered by Expo · TypeScript*
+
+## One line description
+
+Haven is a financial platform built exclusively for international students arriving at UK universities — combining pre-arrival account setup, parent-to-student transfers, automatic UK credit building, and AI-powered money management in one place.
+
+## The problem
+
+- 600,000+ international students arrive in UK universities every year.
+- They face a chicken-and-egg problem: need a UK address to open a bank account, need a bank account to settle into accommodation.
+- Existing solutions like HSBC Premier only work if your family already banks with them. Wise and Revolut were built for everyone — not for the specific financial life of an international student.
+
+## The solution
+
+- Pre-arrival account opening using a university offer letter before you land.
+- Cheap parent-to-student transfers regardless of which bank the family uses back home.
+- Automatic UK credit building through rent reporting — no salary required.
+- AI money manager that understands student loan cycles, quarterly parent transfers, and London rent dates.
+
+## Key screens
+
+- **Welcome & Onboarding** — university selector, offer letter verification, passport KYC.
+- **Dashboard** — global balance, arrival checklist, AI nudges.
+- **Parent View** — read-only balance and rent status for family back home.
+- **Progress** — credit score tracker and AI money assistant.
+- **Card Management** — virtual and physical card controls.
+- **Receive Money** — shareable account details for parent transfers.
+
+## Tech stack
+
+- React Native with Expo
+- TypeScript throughout
+- BaaS: Griffin (UK Banking Licence, FCA Regulated)
+- KYC: Onfido
+- Transfers: Currencycloud / Thunes
+- Credit Reporting: CreditLadder API / Experian
+- Open Banking: TrueLayer
+
+## Status
+
+Currently in closed pilot development.  
+Built by an international student at UCL, for international students.
+
+GitHub: [@mehulgupta1001](https://github.com/mehulgupta1001)
+
+## Requirements & quick start
 
 - **Node.js** LTS (includes `npm`)
-- **Expo Go** on a physical device ([iOS](https://apps.apple.com/app/expo-go/id982107779) / [Android](https://play.google.com/store/apps/details?id=host.exp.exponent)) if you want to run on your phone
-- For simulators: Xcode (iOS) or Android Studio / emulator (Android)
-
-## Quick start
+- **Expo Go** on a phone ([iOS](https://apps.apple.com/app/expo-go/id982107779) / [Android](https://play.google.com/store/apps/details?id=host.exp.exponent)) for device testing
+- Simulators: Xcode (iOS) or Android Studio / emulator (Android)
 
 ```bash
 npm install
 npm start
 ```
 
-Scan the QR code with Expo Go (Android) or the Camera app (iOS), or press `a` / `i` in the terminal for an emulator.
+Scan the QR with Expo Go (Android) or the Camera app (iOS), or press `a` / `i` in the terminal for an emulator.
 
-Other scripts:
-
-| Command        | Description           |
-| -------------- | --------------------- |
+| Command | Description |
+| ------- | ----------- |
 | `npm run android` | Start for Android |
-| `npm run ios`     | Start for iOS     |
-| `npm run web`     | Start for web     |
+| `npm run ios` | Start for iOS |
+| `npm run web` | Start for web |
 
-## What’s in the app
-
-- **Welcome / sign-up** — onboarding-style flow with mock auth and profile (e.g. university).
-- **Home** — balance card, recent transactions, pre-arrival checklist, credit snapshot.
-- **Receive** — illustrative “money from home” flow with **mock** FX rates and currency picker.
-- **Card** — card state and controls (mock).
-- **Progress** — credit / journey style screen (mock).
-- **Rent reporting** — dedicated screen for the rent → credit story (mock).
-
-All server-like behaviour lives under `src/services/` (`authService`, `transactionService`, `creditService`, etc.) with delays and static or generated data to mimic a network.
+This repo uses **mock services only** for balances, transfers, and cards — there is no real money or production backend in this codebase.
 
 ## Project layout
 
 ```
-├── App.tsx                 # Root providers + navigation container
+├── App.tsx
 ├── src/
-│   ├── components/        # Reusable UI (balance card, trust footer, etc.)
-│   ├── context/           # Auth, currency
-│   ├── data/              # Fiat currencies, UK universities lists
-│   ├── navigation/        # Tab + stack navigators
-│   ├── screens/           # Feature screens
-│   ├── services/          # Mock APIs and types
-│   └── theme/             # Colors + ThemeProvider
-├── app.json               # Expo config (name: Haven)
+│   ├── components/    # Reusable UI (balance card, trust footer, etc.)
+│   ├── context/       # Auth, currency
+│   ├── data/          # Fiat currencies, UK universities
+│   ├── navigation/    # Tab + stack navigators
+│   ├── screens/       # Feature screens
+│   ├── services/      # Mock APIs and types
+│   └── theme/         # Colors + ThemeProvider
+├── app.json
 └── package.json
 ```
 
-## Stack
+## Stack (implementation)
 
-- **Expo SDK 54**, **React Native 0.81**, **React 19**
-- **TypeScript**
-- **React Navigation** (native stack + bottom tabs)
-- **lucide-react-native** for icons
+- Expo SDK 54, React Native 0.81, React 19
+- React Navigation (native stack + bottom tabs)
+- lucide-react-native for icons
 
 ## Disclaimer
 
-**Haven is a design and learning prototype.** It does not hold or move money, is not regulated, and must not be presented as a real bank or financial service. Do not enter real financial credentials expecting security or compliance.
+**Haven in this repository is a design and learning prototype.** It does not hold or move money, is not a regulated product by itself, and must not be presented as a real bank. Do not enter real financial credentials expecting bank-grade security.
 
 ## Licence
 
