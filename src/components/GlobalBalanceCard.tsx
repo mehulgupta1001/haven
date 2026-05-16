@@ -22,7 +22,6 @@ export function GlobalBalanceCard({ balanceGbp }: Props) {
     homeCurrency,
     setHomeCurrency,
     formatGbpAmount,
-    activeCurrencyCode,
   } = useCurrency();
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -69,8 +68,8 @@ export function GlobalBalanceCard({ balanceGbp }: Props) {
       </View>
 
       <Text style={[styles.fxDisclaimer, { color: colors.paper }]}>
-        Indicative desktop rate (Wise / Currencycloud-style coverage in catalogue). Settles in{' '}
-        {activeCurrencyCode === 'GBP' ? 'GBP' : `${homeCurrency} equivalent`}.
+        Indicative exchange rate shown for budgeting. Your funds are kept in GBP; we translate to your home currency for
+        display.
       </Text>
 
       <FiatCurrencyPickerSheet

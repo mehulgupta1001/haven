@@ -87,7 +87,7 @@ export function CardManagementScreen() {
     setBusy(true);
     try {
       const res = await cardService.requestPinReveal();
-      Alert.alert('PIN (mock)', res.mockNote);
+      Alert.alert('PIN', res.mockNote);
     } finally {
       setBusy(false);
     }
@@ -95,8 +95,8 @@ export function CardManagementScreen() {
 
   const onReplace = () => {
     Alert.alert(
-      'Replace card (mock)',
-      'Confirm replacement? A live flow would re-KYC device + post a tracked bundle.',
+      'Replace card',
+      'We’ll cancel your current card and post a replacement. You’ll complete a quick security check in the next step.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -133,7 +133,8 @@ export function CardManagementScreen() {
       <ScrollView contentContainerStyle={styles.pad} showsVerticalScrollIndicator={false}>
         <Text style={[styles.title, { color: colors.navy }]}>Card</Text>
         <Text style={[styles.lead, { color: colors.inkSecondary }]}>
-          Your Haven Visa debit (mock). PAN is masked; controls below simulate freeze, limits, and wallet readiness.
+          Your Haven Visa debit. Only the last four digits are shown here — manage freeze, limits, and wallet readiness
+          below.
         </Text>
 
         <View style={[styles.cardVisual, { backgroundColor: colors.navy }]}>
@@ -171,7 +172,7 @@ export function CardManagementScreen() {
               <View>
                 <Text style={[styles.panelTitle, { color: colors.navy }]}>Instant freeze</Text>
                 <Text style={[styles.panelSub, { color: colors.inkSecondary }]}>
-                  Halts contactless and e-commerce authorisations — mock auth rule.
+                  Blocks new contactless and online card purchases while frozen.
                 </Text>
               </View>
             </View>
@@ -207,7 +208,7 @@ export function CardManagementScreen() {
         <View style={[styles.panel, { borderColor: colors.border, backgroundColor: colors.paper }]}>
           <Text style={[styles.panelTitle, { color: colors.navy }]}>Daily POS cap (GBP)</Text>
           <Text style={[styles.panelSub, { color: colors.inkSecondary, marginBottom: 12 }]}>
-            Soft limit for point-of-sale — ATM and mandate debits may differ in production.
+            Soft limit for day-to-day card spending — ATM withdrawals and scheduled payments may follow different caps.
           </Text>
           <Text style={[styles.capValue, { color: colors.emerald }]}>£{card.dailySpendCapGbp}</Text>
           <View style={styles.capRow}>
@@ -241,7 +242,7 @@ export function CardManagementScreen() {
             ]}
           >
             <Eye color={colors.navy} size={20} />
-            <Text style={[styles.btnText, { color: colors.navy }]}>Reveal PIN (mock)</Text>
+            <Text style={[styles.btnText, { color: colors.navy }]}>Reveal PIN</Text>
           </Pressable>
           <Pressable
             onPress={onReplace}
@@ -260,7 +261,8 @@ export function CardManagementScreen() {
         <View style={[styles.txCard, { borderColor: colors.border, backgroundColor: colors.paper }]}>
           {tx.length === 0 ? (
             <Text style={[styles.panelSub, { color: colors.inkTertiary, padding: 16 }]}>
-              No debit transactions in the mock ledger yet — fund your account from Home or Receive.
+              No card purchases yet — add funds from Home or Receive, then chip and contactless transactions will appear
+              here.
             </Text>
           ) : (
             tx.map((t, i) => (
@@ -285,16 +287,16 @@ export function CardManagementScreen() {
         <View style={[styles.walletBlock, { borderColor: colors.border, backgroundColor: colors.paper }]}>
           <Text style={[styles.panelTitle, { color: colors.navy }]}>Apple Pay / Google Pay</Text>
           <Text style={[styles.panelSub, { color: colors.inkSecondary }]}>
-            Push provisioning after full verification (mock: Apple {card.applePayReady ? 'ready' : 'locked'}, Google{' '}
-            {card.googlePayReady ? 'ready' : 'locked'}).
+            Add your card to Apple Pay or Google Pay after we’ve finished verifying your account. Apple Wallet:{' '}
+            {card.applePayReady ? 'ready' : 'pending'} · Google Wallet: {card.googlePayReady ? 'ready' : 'pending'}.
           </Text>
         </View>
 
         <View style={[styles.infoBlock, { backgroundColor: colors.paper, borderColor: colors.border }]}>
           <Lock color={colors.navy} size={20} />
           <Text style={[styles.infoText, { color: colors.inkSecondary }]}>
-            Card details stay tokenised in production; this build only shows last-four and mock controls — no PAN or PIN
-            leaves the secure enclave in a live stack.
+            Your full card number and PIN stay encrypted on your device. Haven only surfaces the essentials you need to
+            pay safely — including masking your card number wherever it appears.
           </Text>
         </View>
 

@@ -43,7 +43,9 @@ export function ProgressScreen() {
           </Text>
           <View style={[styles.pillRow, { borderTopColor: colors.border }]}>
             <Text style={[styles.pillLabel, { color: colors.inkTertiary }]}>Building your file</Text>
-            <Text style={[styles.pillValue, { color: colors.ink }]}>Registered address · Current account · (Rent link pending)</Text>
+            <Text style={[styles.pillValue, { color: colors.ink }]}>
+              Registered address · Current account · Link rent when ready
+            </Text>
           </View>
         </View>
 

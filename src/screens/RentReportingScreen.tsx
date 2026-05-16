@@ -90,7 +90,7 @@ export function RentReportingScreen() {
           ]}
         >
           <Text style={[styles.ctaText, { color: colors.paper }]}>
-            {activeIndex >= STEPS.length - 1 ? 'Connection complete (mock)' : 'Simulate bank authorization'}
+            {activeIndex >= STEPS.length - 1 ? 'Connection complete' : 'Continue at your bank'}
           </Text>
         </Pressable>
       </View>

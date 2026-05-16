@@ -29,8 +29,7 @@ export function ReceiveMoneyScreen() {
       <ScrollView contentContainerStyle={styles.pad}>
         <Text style={[styles.title, { color: colors.navy }]}>Receive from parents</Text>
         <Text style={[styles.lead, { color: colors.inkSecondary }]}>
-          Send these UK account details to your parents so they can fund you from their home bank (mock — no real
-          payments).
+          Send these UK account details to your parents so they can fund you from their home bank.
         </Text>
 
         {summary ? (
@@ -43,7 +42,7 @@ export function ReceiveMoneyScreen() {
             <Row label="Sort code" value={summary.sortCode} colors={colors} />
             <Row label="Account number" value={`••••${summary.accountNumberLast4}`} colors={colors} />
             <Text style={[styles.hint, { color: colors.inkTertiary }]}>
-              Reference: use your Haven ID in the payment reference so we can match it (mock).
+              Reference: use your Haven ID in the payment reference so we can match the payment to your account.
             </Text>
           </View>
         ) : null}
@@ -56,15 +55,14 @@ export function ReceiveMoneyScreen() {
           ]}
         >
           <Bell color={colors.paper} size={20} />
-          <Text style={[styles.btnText, { color: colors.paper }]}>Simulate: parent sent money</Text>
+          <Text style={[styles.btnText, { color: colors.paper }]}>Parents have sent money</Text>
         </Pressable>
 
         {parentSent ? (
           <View style={[styles.notice, { borderColor: colors.emerald, backgroundColor: colors.emeraldMuted }]}>
             <Bell color={colors.emeraldDark} size={22} />
             <Text style={[styles.noticeText, { color: colors.ink }]}>
-              Notification: we’ve detected an incoming transfer from your parent’s bank (mock). Typically clears in
-              minutes for FPS.
+              We’ve noticed an incoming transfer from your parents’ bank — Faster Payments usually clear within minutes.
             </Text>
           </View>
         ) : null}
@@ -84,14 +82,14 @@ export function ReceiveMoneyScreen() {
           ]}
         >
           <CheckCircle2 color={colors.paper} size={20} />
-          <Text style={[styles.btnText, { color: colors.paper }]}>Simulate: money arrived</Text>
+          <Text style={[styles.btnText, { color: colors.paper }]}>Funds have arrived</Text>
         </Pressable>
 
         {arrived ? (
           <View style={[styles.notice, { borderColor: colors.border, backgroundColor: colors.paper }]}>
             <CheckCircle2 color={colors.emerald} size={22} />
             <Text style={[styles.noticeText, { color: colors.ink }]}>
-              £ deposited — your balance on Home updates after refresh (mock).
+              Your deposit is complete — pull to refresh on Home if your balance hasn’t updated yet.
             </Text>
           </View>
         ) : null}

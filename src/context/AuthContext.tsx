@@ -114,7 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         const stored = JSON.parse(raw) as AuthSession;
         if (stored.email !== e) {
-          setError('That email does not match this device’s saved profile (mock).');
+          setError('That email doesn’t match the signed-in profile on this device. Sign in with the email you registered.');
           return;
         }
         await authService.signInMock(email, password);
