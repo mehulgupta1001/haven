@@ -4,8 +4,6 @@
 
 *Built with React Native · Powered by Expo · TypeScript*
 
-## One line description
-
 Haven is a financial platform built exclusively for international students arriving at UK universities — combining pre-arrival account setup, parent-to-student transfers, automatic UK credit building, and AI-powered money management in one place.
 
 ## The problem
@@ -90,10 +88,14 @@ This repo uses **mock services only** for balances, transfers, and cards — the
 - React Navigation (native stack + bottom tabs)
 - lucide-react-native for icons
 
-## Disclaimer
-
-**Haven in this repository is a design and learning prototype.** It does not hold or move money, is not a regulated product by itself, and must not be presented as a real bank. Do not enter real financial credentials expecting bank-grade security.
 
 ## Licence
 
 No licence is included by default. Add a `LICENSE` file if you want to specify terms for others.
+
+## Disclaimer
+
+This repository contains a prototype built for learning and
+validation purposes. No real money is held or moved. Haven is
+not a regulated financial product. Do not enter real financial
+credentials.
