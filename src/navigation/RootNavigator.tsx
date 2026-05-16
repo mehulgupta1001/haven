@@ -9,6 +9,7 @@ import { HavenDashboardScreen } from '../screens/HavenDashboardScreen';
 import { ReceiveMoneyScreen } from '../screens/ReceiveMoneyScreen';
 import { CardManagementScreen } from '../screens/CardManagementScreen';
 import { ProgressScreen } from '../screens/ProgressScreen';
+import { ComplianceReviewScreen } from '../screens/ComplianceReviewScreen';
 import { ParentViewScreen } from '../screens/ParentViewScreen';
 import { RentReportingScreen } from '../screens/RentReportingScreen';
 import { WelcomeAuthScreen } from '../screens/WelcomeAuthScreen';
@@ -88,6 +89,11 @@ function AuthenticatedStack() {
         options={{ title: 'Rent reporting' }}
       />
       <Stack.Screen name="ParentView" component={ParentViewScreen} options={{ title: 'Parent view' }} />
+      <Stack.Screen
+        name="ComplianceReview"
+        component={ComplianceReviewScreen}
+        options={{ headerShown: false, title: 'Compliance review' }}
+      />
     </Stack.Navigator>
   );
 }
