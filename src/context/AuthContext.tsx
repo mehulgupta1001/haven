@@ -82,8 +82,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(null);
       try {
         const session = await authService.signUpMock({
-          ...payload,
+          email: payload.email,
+          password: payload.password,
+          displayName: payload.displayName,
           receiveCurrency: coerceReceiveCurrency(payload.receiveCurrency),
+          universityName: payload.universityName,
+          universityId: payload.universityId,
         });
         setProfile(session);
         setHomeCurrency(session.receiveCurrency);

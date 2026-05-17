@@ -6,6 +6,9 @@ export type SignUpPayload = {
   password: string;
   displayName: string;
   receiveCurrency: FiatCurrencyCode;
+  /** Full label from the UK university picker (not inferred from email). */
+  universityName?: string;
+  universityId?: string;
 };
 
 export type AuthService = {
@@ -52,11 +55,13 @@ export const authService: AuthService = {
     await mockDelay();
     const displayName = payload.displayName.trim() || 'Student';
     const e = payload.email.trim().toLowerCase();
+    const universityName = payload.universityName?.trim() || universityLabelFromEmail(e);
     return {
       userId: mockUserIdFromEmail(e),
       email: e,
       displayName,
-      universityName: universityLabelFromEmail(e),
+      universityName,
+      universityId: payload.universityId,
       receiveCurrency: payload.receiveCurrency,
       universityEmailVerified: false,
       createdAt: demoCreatedAtIso(),

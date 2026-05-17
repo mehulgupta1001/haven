@@ -147,6 +147,8 @@ export function WelcomeAuthScreen() {
       password,
       displayName: displayName.trim() || email.split('@')[0] || 'Student',
       receiveCurrency,
+      universityName: selectedUniversity?.name,
+      universityId: selectedUniversity?.id,
     });
   };
 

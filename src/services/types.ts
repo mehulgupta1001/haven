@@ -12,8 +12,10 @@ export type AuthSession = {
   userId: string;
   email: string;
   displayName: string;
-  /** Russell Group or University of London institution chosen at onboarding */
+  /** Institution name from the university picker at sign-up — not derived from email. */
   universityName: string;
+  /** Stable id from `UK_FOCUS_UNIVERSITIES` when the student picked an institution. */
+  universityId?: string;
   /** Currency guardians most often send — must exist in the fiat catalog */
   receiveCurrency: FiatCurrencyCode;
   universityEmailVerified: boolean;
