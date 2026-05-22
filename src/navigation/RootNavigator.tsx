@@ -12,6 +12,7 @@ import { ProgressScreen } from '../screens/ProgressScreen';
 import { ComplianceReviewScreen } from '../screens/ComplianceReviewScreen';
 import { ParentViewScreen } from '../screens/ParentViewScreen';
 import { RentReportingScreen } from '../screens/RentReportingScreen';
+import { SpendingInsightsScreen } from '../screens/SpendingInsightsScreen';
 import { WelcomeAuthScreen } from '../screens/WelcomeAuthScreen';
 import type { MainTabParamList, RootStackParamList } from './types';
 
@@ -89,6 +90,7 @@ function AuthenticatedStack() {
         options={{ title: 'Rent reporting' }}
       />
       <Stack.Screen name="ParentView" component={ParentViewScreen} options={{ title: 'Parent view' }} />
+      <Stack.Screen name="SpendingInsights" component={SpendingInsightsScreen} options={{ title: 'Invisible spending' }} />
       <Stack.Screen
         name="ComplianceReview"
         component={ComplianceReviewScreen}

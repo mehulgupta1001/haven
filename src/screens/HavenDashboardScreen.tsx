@@ -29,6 +29,7 @@ import {
   Inbox,
   Mail,
   Package,
+  TrendingDown,
   ChevronRight,
   Lock,
   Shield,
@@ -306,6 +307,18 @@ export function HavenDashboardScreen() {
           )}
         </View>
 
+        <Pressable
+          onPress={() => navigation.navigate('SpendingInsights')}
+          style={({ pressed }) => [styles.invisibleSpendingRow, { opacity: pressed ? 0.75 : 1 }]}
+          accessibilityRole="button"
+          accessibilityLabel="See your invisible spending"
+        >
+          <TrendingDown color={colors.navy} size={18} />
+          <Text style={[styles.invisibleSpendingRowText, { color: colors.navy }]}>
+            See your invisible spending →
+          </Text>
+        </Pressable>
+
         <View style={styles.sectionLabelRow}>
           <Text style={[styles.sectionLabel, { color: colors.navy }]}>Your arrival checklist</Text>
         </View>
@@ -427,6 +440,15 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   txCard: { borderRadius: 16, borderWidth: 1, overflow: 'hidden' },
+  invisibleSpendingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    alignSelf: 'stretch',
+  },
+  invisibleSpendingRowText: { fontSize: 13, fontWeight: '600', flex: 1 },
   txEmpty: {
     paddingVertical: 28,
     paddingHorizontal: 20,

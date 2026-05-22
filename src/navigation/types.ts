@@ -13,6 +13,7 @@ export type RootStackParamList = {
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
   RentReporting: undefined;
   ParentView: undefined;
+  SpendingInsights: undefined;
   ComplianceReview: { transferAmount?: number; senderName?: string } | undefined;
 };
 
