@@ -335,6 +335,15 @@ export function HavenDashboardScreen() {
             complete
           />
           <ChecklistRow
+            title="Get your Oyster card"
+            description={
+              "London's Tube and bus fares add up fast.\nAn Oyster card saves money vs contactless —\nset it up before you arrive."
+            }
+            complete={false}
+            isLast={false}
+            onPress={() => navigation.navigate('SpendingInsights')}
+          />
+          <ChecklistRow
             title="Inbound transfer from parents"
             description="Share your Haven details from the Receive tab so family can send your first deposit."
             complete={false}
