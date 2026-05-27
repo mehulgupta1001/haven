@@ -41,6 +41,7 @@ import {
 const GRIFFIN_FCA_FIRM_REF_URL =
   'https://register.fca.org.uk/s/firm?id=0014G00002uxwpEQAQ';
 const ROYAL_MAIL_REDELIVERY_URL = 'https://www.royalmail.com/redelivery';
+const NHS_GP_REGISTER_URL = 'https://www.nhs.uk/nhs-services/gps/how-to-register-with-a-gp-surgery/';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const CARD_ARRIVAL_WINDOW_DAYS = 7;
@@ -132,6 +133,16 @@ export function HavenDashboardScreen() {
     try {
       const supported = await Linking.canOpenURL(ROYAL_MAIL_REDELIVERY_URL);
       if (supported) await Linking.openURL(ROYAL_MAIL_REDELIVERY_URL);
+      else Alert.alert('Unable to open', 'Cannot open this link on this device.');
+    } catch {
+      Alert.alert('Unable to open', 'Something went wrong opening the page.');
+    }
+  };
+
+  const openNhsGpRegistration = async () => {
+    try {
+      const supported = await Linking.canOpenURL(NHS_GP_REGISTER_URL);
+      if (supported) await Linking.openURL(NHS_GP_REGISTER_URL);
       else Alert.alert('Unable to open', 'Cannot open this link on this device.');
     } catch {
       Alert.alert('Unable to open', 'Something went wrong opening the page.');
@@ -342,6 +353,15 @@ export function HavenDashboardScreen() {
             complete={false}
             isLast={false}
             onPress={() => navigation.navigate('SpendingInsights')}
+          />
+          <ChecklistRow
+            title="Register with a GP"
+            description={
+              "You're entitled to free NHS care as a student. Register with a local GP before you need one — it takes 5 minutes online."
+            }
+            complete={false}
+            isLast={false}
+            onPress={() => void openNhsGpRegistration()}
           />
           <ChecklistRow
             title="Inbound transfer from parents"
