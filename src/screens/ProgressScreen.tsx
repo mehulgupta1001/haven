@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import type { CompositeNavigationProp } from '@react-navigation/native';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../theme';
 import { useAuth } from '../context/AuthContext';
-import { BrainCircuit, LineChart, ShieldCheck } from 'lucide-react-native';
+import type { MainTabParamList, RootStackParamList } from '../navigation/types';
+import { BrainCircuit, ChevronRight, LineChart, ShieldCheck, Target } from 'lucide-react-native';
+
+type Nav = CompositeNavigationProp<
+  BottomTabNavigationProp<MainTabParamList, 'Progress'>,
+  NativeStackNavigationProp<RootStackParamList>
+>;
 
 /**
  * Flow 5 — Credit score (screen 12) + Flow 6 — AI assistant (screen 13), plus sign-out.
@@ -11,6 +21,7 @@ import { BrainCircuit, LineChart, ShieldCheck } from 'lucide-react-native';
  */
 export function ProgressScreen() {
   const { colors } = useTheme();
+  const navigation = useNavigation<Nav>();
   const { signOut, busy } = useAuth();
   const [localBusy, setLocalBusy] = useState(false);
 
@@ -76,6 +87,25 @@ export function ProgressScreen() {
           </View>
         </View>
 
+        <Pressable
+          onPress={() => navigation.navigate('WeeklyBudget')}
+          style={({ pressed }) => [
+            styles.budgetCard,
+            { borderColor: colors.border, backgroundColor: colors.paper, opacity: pressed ? 0.88 : 1 },
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel="Set your weekly budget"
+        >
+          <Target color={colors.navy} size={22} strokeWidth={2} />
+          <View style={styles.budgetCardText}>
+            <Text style={[styles.budgetCardTitle, { color: colors.navy }]}>Set your weekly budget</Text>
+            <Text style={[styles.budgetCardSubtitle, { color: colors.inkSecondary }]}>
+              Tell Haven how much you want to spend each week — we'll track it automatically.
+            </Text>
+          </View>
+          <ChevronRight color={colors.navy} size={22} strokeWidth={2} />
+        </Pressable>
+
         <View style={[styles.trust, { borderColor: colors.border, backgroundColor: colors.paper }]}>
           <ShieldCheck color={colors.emerald} size={22} />
           <Text style={[styles.trustText, { color: colors.inkSecondary }]}>
@@ -136,6 +166,17 @@ const styles = StyleSheet.create({
   alert: { borderRadius: 12, borderWidth: 1, padding: 12, gap: 4 },
   alertTitle: { fontSize: 14, fontWeight: '800' },
   alertBody: { fontSize: 13, lineHeight: 18 },
+  budgetCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  budgetCardText: { flex: 1, gap: 4 },
+  budgetCardTitle: { fontSize: 16, fontWeight: '700' },
+  budgetCardSubtitle: { fontSize: 13, lineHeight: 18 },
   trust: { flexDirection: 'row', gap: 12, padding: 14, borderRadius: 14, borderWidth: 1 },
   trustText: { flex: 1, fontSize: 12, lineHeight: 18 },
   signOut: { borderWidth: 1, borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginTop: 8 },

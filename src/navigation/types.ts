@@ -14,6 +14,7 @@ export type RootStackParamList = {
   RentReporting: undefined;
   ParentView: undefined;
   SpendingInsights: undefined;
+  WeeklyBudget: undefined;
   ComplianceReview: { transferAmount?: number; senderName?: string } | undefined;
 };
 
